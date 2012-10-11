@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="35369soreygarcia.Sugges.me" Publisher="CN=7D065A18-0574-41F0-B838-F82F65E31EB3" Version="1.0.0.12" />
+  <Properties>
+    <DisplayName>Sugges.me</DisplayName>
+    <PublisherDisplayName>soreygarcia</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.2.1</OSMinVersion>
+    <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Sugges.UI.App">
+      <VisualElements DisplayName="Sugges.me" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Travel assistant" ForegroundText="light" BackgroundColor="#DE6600">
+        <DefaultTile ShowName="logoOnly" WideLogo="Assets\WideLogo.png" />
+        <SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#FFFFFF" />
+      </VisualElements>
+    </Application>
+  </Applications>
+</Package>

@@ -1,0 +1,14 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Sugges.UI">
+	<SolidColorBrush x:Key="SignInPageBackgroundColor" Color="#FFF6F3E5"/>
+	<SolidColorBrush x:Key="SuggesFlyoutBackgroundColor" Color="#FFDE6600"/>
+	<SolidColorBrush x:Key="SuggesLightShadowsBackgroundColor" Color="#FFE9DDAF"/>
+    <SolidColorBrush x:Key="SuggesDescriptionForegroundColor" Color="#FFF6F3E5"/>
+    <SolidColorBrush x:Key="SuggesSecondaryDescriptionForegroundColor" Color="#FFAC8C0C"/>
+    <SolidColorBrush x:Key="SuggesTitleForegroundColor" Color="White"/>
+    <SolidColorBrush x:Key="SuggesBackgroundColor" Color="White"/>
+    <SolidColorBrush x:Key="SuggesGroupTitleForegroundColor" Color="#FF554402"/>
+    <SolidColorBrush x:Key="SuggesDarkShadowsBackgroundColor" Color="#B2554402"/>
+</ResourceDictionary>
