@@ -12,6 +12,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.System;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -98,20 +99,30 @@ namespace Sugges.UI
             Window.Current.Activate();
         }
 
-        void OnSettingsCommand(IUICommand command)
+        async void OnSettingsCommand(IUICommand command)
         {
             SettingsCommand settingsCommand = (SettingsCommand)command;
-            //TODO: If there are several command, evaluate the settingsCommand
-            var trips = new SettingsFlyout();
-            trips.ShowFlyout(new About());
+            switch(command.Id.ToString())
+            {
+                case "about":
+                    var about = new SettingsFlyout();
+                    about.ShowFlyout(new About());
+                    break;
+                case "privacyPolicy":
+                    await Launcher.LaunchUriAsync(new Uri("http://sugges.me/privacy.aspx"));
+                    break;
+            }
         }
 
         void onCommandsRequested(SettingsPane settingsPane, SettingsPaneCommandsRequestedEventArgs eventArgs)
         {
             UICommandInvokedHandler handler = new UICommandInvokedHandler(OnSettingsCommand);
 
-            SettingsCommand aboutCommand = new SettingsCommand("aboutFlyout", "About", handler);
+            SettingsCommand aboutCommand = new SettingsCommand("about", "About", handler);
             eventArgs.Request.ApplicationCommands.Add(aboutCommand);
+
+            SettingsCommand policyCommand = new SettingsCommand("privacyPolicy", "Privacy Policy", handler);
+            eventArgs.Request.ApplicationCommands.Add(policyCommand);
         }
 
         /// <summary>
