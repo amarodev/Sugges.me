@@ -8,3 +8,9 @@ Twiiter: [@sugges_me](http://twitter.com/sugges_me) <br />
 Developer
 -----------------------
 Sorey García ([@soreygarcia](http://twitter.com/soreygarcia))
+
+Licencia
+-----------------------
+Creative Commons Atribución NoComercial CompartirIgual 3.0
+Eres libre de copiar, distribuir y compartir esta app sin modificaciones ni haciendo uso comercial de ella.
+Siente libre de usar su codigo para aprender o partes del mismo en tus aplicaciones.
