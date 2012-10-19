@@ -11,6 +11,6 @@ Sorey García ([@soreygarcia](http://twitter.com/soreygarcia))
 
 Licencia
 -----------------------
-Creative Commons Atribución NoComercial ShareEqual 3.0
-You're free to copy, distribute and share this app without modifications and you can not use it to commercial activities.
-You can use the code to learn and the parts of it in your apps.
+Creative Commons Atribución NoComercial CompartirIgual 3.0
+Eres libre de copiar, distribuir y compartir esta app sin modificaciones ni haciendo uso comercial de ella.
+Siente libre de usar su codigo para aprender o partes del mismo en tus aplicaciones.
