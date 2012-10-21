@@ -49,26 +49,32 @@ namespace Sugges.UI
             this.btnDelete.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
         }
 
-        void DataRequested(DataTransferManager sender, DataRequestedEventArgs e)
+        async void DataRequested(DataTransferManager sender, DataRequestedEventArgs e)
         {
-            TripViewModel trip = MainViewModel.GetSelectedTrip();
+            if (this.selectedTrip.LocalPathImage.Equals("/Assets/Trip.png"))
+            {
+                await App.ShowSimpleMessage("You can't share the default trip image", "Sharing photo");
+            }
+            else
+            {
+                TripViewModel trip = MainViewModel.GetSelectedTrip();
 
-            DataPackage requestData = e.Request.Data;
-            e.Request.Data.Properties.Title = trip.Title;
-            e.Request.Data.Properties.Description = trip.Description;
+                DataPackage requestData = e.Request.Data;
+                e.Request.Data.Properties.Title = trip.Title;
+                e.Request.Data.Properties.Description = trip.Description;
 
-            // It's recommended to use both SetBitmap and SetStorageItems for sharing a single image
-            // since the target app may only support one or the other.
+                // It's recommended to use both SetBitmap and SetStorageItems for sharing a single image
+                // since the target app may only support one or the other.
+                Uri imageUri = new Uri(selectedTrip.LocalPathImage);
 
-            Uri imageUri = ((Windows.UI.Xaml.Media.Imaging.BitmapImage)(imgTripPhoto.Source)).UriSource;
+                List<IStorageItem> imageItems = new List<IStorageItem>();
+                imageItems.Add(await StorageFile.GetFileFromApplicationUriAsync(imageUri));
+                requestData.SetStorageItems(imageItems);
 
-            //List<IStorageItem> imageItems = new List<IStorageItem>();
-            //imageItems.Add(await StorageFile.GetFileFromApplicationUriAsync(imageUri));
-            //requestData.SetStorageItems(imageItems);
-
-            RandomAccessStreamReference imageStreamRef = RandomAccessStreamReference.CreateFromUri(imageUri);
-            requestData.Properties.Thumbnail = imageStreamRef;
-            requestData.SetBitmap(imageStreamRef);
+                RandomAccessStreamReference imageStreamRef = RandomAccessStreamReference.CreateFromUri(imageUri);
+                requestData.Properties.Thumbnail = imageStreamRef;
+                requestData.SetBitmap(imageStreamRef);
+            }
 
         }
 
@@ -105,6 +111,7 @@ namespace Sugges.UI
         {
             base.OnNavigatedFrom(e);
             DataTransferManager.GetForCurrentView().DataRequested -= new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.DataRequested);
+            isRegisteredToShare = false;
         }
 
         /// <summary>
