@@ -351,12 +351,12 @@ namespace Sugges.UI.Logic.ViewModels
             return null;
         }
 
-        public static TripViewModel GetTrip(Int32 identifier)
+        async public static Task<TripViewModel> GetTrip(Int32 identifier)
         {
             // Simple linear search is acceptable for small data sets
             var matches = _mainViewModel.AllGroups.SelectMany(group => group.Items).Where((item) => item.Identifier.Equals(identifier));
             if (matches.Count() == 1) return matches.First();
-            return null;
+            return new TripViewModel();
         }
 
         #endregion
@@ -435,14 +435,14 @@ namespace Sugges.UI.Logic.ViewModels
             foreach (int identifier in identifiers)
             {
                 await model.DeleteItemAsync(identifier);
-                TripViewModel trip = GetTrip(identifier);
+                TripViewModel trip = await GetTrip(identifier);
                 _mainViewModel.AllGroups[0].Items.Remove(trip);
             }
         }
 
         async public static Task<TripViewModel> GetFullTrip(int identifier)
         {
-            TripViewModel trip = GetTrip(identifier);
+            TripViewModel trip = await GetTrip(identifier);
             trip.ItemsCost = 0;
             List<ItemViewModel> items = await model.GetItemsByTripAsync(identifier);
 

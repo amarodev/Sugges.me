@@ -252,7 +252,7 @@ namespace Sugges.UI.Logic.Models
             }
         }
 
-        async public void RegisterTrashImage(string imageName)
+        async public Task RegisterTrashImage(string imageName)
         {
             SQLite.SQLiteAsyncConnection context = new SQLite.SQLiteAsyncConnection(connectionString);
             TrashImage image = await context.Table<TrashImage>().Where(p => p.Name == imageName).FirstOrDefaultAsync();
@@ -284,6 +284,34 @@ namespace Sugges.UI.Logic.Models
 
             if (image != null)
                 await context.DeleteAsync(image);
+        }
+
+
+        async public Task<TripViewModel> GetTripAsync(int identifier)
+        {
+            SQLite.SQLiteAsyncConnection context = new SQLite.SQLiteAsyncConnection(connectionString);
+
+            TripViewModel trip = new TripViewModel();
+            //trips have the parent null, items have a trip as parent
+            Item item = await context.Table<Item>().Where(p => p.IsSuggestion == false && p.Identifier == identifier && p.Parent == 0).FirstOrDefaultAsync();
+
+            trip = new TripViewModel()
+            {
+                Title = item.Title,
+                Description = item.Description,
+                EndDate = Convert.ToDateTime(item.EndDate),
+                StartDate = Convert.ToDateTime(item.StartDate),
+                Category = (Int16)Sugges.UI.Logic.Enumerations.Category.Trips,
+                Cost = item.Cost,
+                Identifier = item.Identifier,
+                Latitude = item.Latitude,
+                Longitude = item.Longitude,
+                RemotePathImage = item.Image == null ? "/Assets/Trip.png" : item.Image,
+                LocalPathImage = item.Image == null ? "/Assets/Trip.png" : item.Image,
+                Traveler = new Guid(item.Traveler)
+            };
+
+            return trip;
         }
     }
 }

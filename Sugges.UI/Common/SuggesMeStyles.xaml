@@ -2632,6 +2632,223 @@
     		</Setter.Value>
     	</Setter>
     </Style>
+    <Style x:Key="SuggesPinAppBarButtonStyle" TargetType="Button">
+    	<Setter Property="Foreground" Value="{StaticResource AppBarItemForegroundThemeBrush}"/>
+    	<Setter Property="VerticalAlignment" Value="Stretch"/>
+    	<Setter Property="FontFamily" Value="Segoe UI Symbol"/>
+    	<Setter Property="FontWeight" Value="Normal"/>
+    	<Setter Property="FontSize" Value="20"/>
+    	<Setter Property="AutomationProperties.ItemType" Value="App Bar Button"/>
+    	<Setter Property="Template">
+    		<Setter.Value>
+    			<ControlTemplate TargetType="Button">
+    				<Grid x:Name="RootGrid" Width="100" Background="Transparent">
+
+    					<VisualStateManager.VisualStateGroups>
+    						<VisualStateGroup x:Name="ApplicationViewStates">
+    							<VisualState x:Name="FullScreenLandscape"/>
+    							<VisualState x:Name="Filled"/>
+    							<VisualState x:Name="FullScreenPortrait">
+    								<Storyboard>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Visibility">
+    										<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+    									</ObjectAnimationUsingKeyFrames>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Width">
+    										<DiscreteObjectKeyFrame KeyTime="0" Value="60"/>
+    									</ObjectAnimationUsingKeyFrames>
+    								</Storyboard>
+    							</VisualState>
+    							<VisualState x:Name="Snapped">
+    								<Storyboard>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Visibility">
+    										<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+    									</ObjectAnimationUsingKeyFrames>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Width">
+    										<DiscreteObjectKeyFrame KeyTime="0" Value="60"/>
+    									</ObjectAnimationUsingKeyFrames>
+    								</Storyboard>
+    							</VisualState>
+    						</VisualStateGroup>
+    						<VisualStateGroup x:Name="CommonStates">
+    							<VisualState x:Name="Normal"/>
+    							<VisualState x:Name="PointerOver">
+    								<Storyboard>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="normal">
+    										<DiscreteObjectKeyFrame KeyTime="0">
+    											<DiscreteObjectKeyFrame.Value>
+    												<Visibility>Visible</Visibility>
+    											</DiscreteObjectKeyFrame.Value>
+    										</DiscreteObjectKeyFrame>
+    									</ObjectAnimationUsingKeyFrames>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="TextLabel">
+    										<DiscreteObjectKeyFrame KeyTime="0">
+    											<DiscreteObjectKeyFrame.Value>
+    												<Visibility>Visible</Visibility>
+    											</DiscreteObjectKeyFrame.Value>
+    										</DiscreteObjectKeyFrame>
+    									</ObjectAnimationUsingKeyFrames>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="pressed">
+    										<DiscreteObjectKeyFrame KeyTime="0">
+    											<DiscreteObjectKeyFrame.Value>
+    												<Visibility>Visible</Visibility>
+    											</DiscreteObjectKeyFrame.Value>
+    										</DiscreteObjectKeyFrame>
+    									</ObjectAnimationUsingKeyFrames>
+    									<ColorAnimation Duration="0" To="#33FFFFFF" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="Fill" d:IsOptimized="True"/>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="path1">
+    										<DiscreteObjectKeyFrame KeyTime="0">
+    											<DiscreteObjectKeyFrame.Value>
+    												<Visibility>Collapsed</Visibility>
+    											</DiscreteObjectKeyFrame.Value>
+    										</DiscreteObjectKeyFrame>
+    									</ObjectAnimationUsingKeyFrames>
+    								</Storyboard>
+    							</VisualState>
+    							<VisualState x:Name="Pressed">
+    								<Storyboard>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="normal">
+    										<DiscreteObjectKeyFrame KeyTime="0">
+    											<DiscreteObjectKeyFrame.Value>
+    												<Visibility>Collapsed</Visibility>
+    											</DiscreteObjectKeyFrame.Value>
+    										</DiscreteObjectKeyFrame>
+    									</ObjectAnimationUsingKeyFrames>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="pressed">
+    										<DiscreteObjectKeyFrame KeyTime="0">
+    											<DiscreteObjectKeyFrame.Value>
+    												<Visibility>Visible</Visibility>
+    											</DiscreteObjectKeyFrame.Value>
+    										</DiscreteObjectKeyFrame>
+    									</ObjectAnimationUsingKeyFrames>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill)" Storyboard.TargetName="path1">
+    										<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SuggesGroupTitleForegroundColor}"/>
+    									</ObjectAnimationUsingKeyFrames>
+    								</Storyboard>
+    							</VisualState>
+    							<VisualState x:Name="Disabled">
+    								<Storyboard>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Foreground">
+    										<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarItemDisabledForegroundThemeBrush}"/>
+    									</ObjectAnimationUsingKeyFrames>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="normal">
+    										<DiscreteObjectKeyFrame KeyTime="0">
+    											<DiscreteObjectKeyFrame.Value>
+    												<Visibility>Visible</Visibility>
+    											</DiscreteObjectKeyFrame.Value>
+    										</DiscreteObjectKeyFrame>
+    									</ObjectAnimationUsingKeyFrames>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="pressed">
+    										<DiscreteObjectKeyFrame KeyTime="0">
+    											<DiscreteObjectKeyFrame.Value>
+    												<Visibility>Collapsed</Visibility>
+    											</DiscreteObjectKeyFrame.Value>
+    										</DiscreteObjectKeyFrame>
+    									</ObjectAnimationUsingKeyFrames>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill)" Storyboard.TargetName="Stroke">
+    										<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarItemDisabledForegroundThemeBrush}"/>
+    									</ObjectAnimationUsingKeyFrames>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill)" Storyboard.TargetName="path">
+    										<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarItemDisabledForegroundThemeBrush}"/>
+    									</ObjectAnimationUsingKeyFrames>
+    								</Storyboard>
+    							</VisualState>
+    						</VisualStateGroup>
+    						<VisualStateGroup x:Name="FocusStates">
+    							<VisualState x:Name="Focused">
+    								<Storyboard>
+    									<DoubleAnimation
+    										Storyboard.TargetName="FocusVisualWhite"
+    										Storyboard.TargetProperty="Opacity"
+    										To="1"
+    										Duration="0"/>
+    									<DoubleAnimation
+    										Storyboard.TargetName="FocusVisualBlack"
+    										Storyboard.TargetProperty="Opacity"
+    										To="1"
+    										Duration="0"/>
+    								</Storyboard>
+    							</VisualState>
+    							<VisualState x:Name="Unfocused" />
+    							<VisualState x:Name="PointerFocused" />
+    						</VisualStateGroup>
+    						<VisualStateGroup x:Name="CheckStates">
+    							<VisualState x:Name="Checked">
+    								<Storyboard>
+    									<ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackgroundCheckedGlyph" Storyboard.TargetProperty="Visibility">
+    										<DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+    									</ObjectAnimationUsingKeyFrames>
+    								</Storyboard>
+    							</VisualState>
+    							<VisualState x:Name="Unchecked"/>
+    							<VisualState x:Name="Indeterminate"/>
+    						</VisualStateGroup>
+    					</VisualStateManager.VisualStateGroups>
+    					<StackPanel VerticalAlignment="Top" Margin="0,12,0,11">
+    						<Grid Width="40" Height="40" Margin="0,0,0,5" HorizontalAlignment="Center">
+    							<Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Name="pressed" Visibility="Collapsed">
+    								<Grid>
+    									<Grid x:Name="backgroundGrid" Width="48" Height="48" Visibility="Visible">
+    										<Ellipse Fill="#FFFFFFFF" x:Name="Fill" Visibility="Visible" />
+    									</Grid>
+    									<Path x:Name="path1" Data="F1M1525.83,266.24L1529.12,256.359 1539,246.478 1542.29,249.771 1552.17,246.478 1542.29,236.598 1545.59,233.304 1559.25,212.907 1539,226.718 1535.71,230.008 1540.88,235.189 1525.83,220.131 1522.53,230.008 1525.83,233.304 1515.95,243.181 1506.06,246.478 1525.83,266.24z" Stretch="Uniform" Fill="#FF000000" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+    										<Path.RenderTransform>
+    											<TransformGroup>
+    												<RotateTransform Angle="0" />
+    												<ScaleTransform ScaleX="1" ScaleY="1" />
+    											</TransformGroup>
+    										</Path.RenderTransform>
+    									</Path>
+    								</Grid>
+    							</Viewbox>
+    							<Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Name="normal">
+    								<Grid>
+    									<Grid x:Name="backgroundGridNormal" Width="48" Height="48" Visibility="Visible">
+    										<Path Data="M50.5,4.7500001C25.232973,4.75 4.75,25.232973 4.7500001,50.5 4.75,75.767029 25.232973,96.25 50.5,96.25 75.767029,96.25 96.25,75.767029 96.25,50.5 96.25,25.232973 75.767029,4.75 50.5,4.7500001z M50.5,0C78.390381,0 101,22.609621 101,50.5 101,78.390381 78.390381,101 50.5,101 22.609621,101 0,78.390381 0,50.5 0,22.609621 22.609621,0 50.5,0z" Stretch="Fill" Fill="#FFFFFFFF" x:Name="Stroke" Visibility="Visible" />
+    									</Grid>
+    									<Path x:Name="path" Data="F1M1525.83,266.24L1529.12,256.359 1539,246.478 1542.29,249.771 1552.17,246.478 1542.29,236.598 1545.59,233.304 1559.25,212.907 1539,226.718 1535.71,230.008 1540.88,235.189 1525.83,220.131 1522.53,230.008 1525.83,233.304 1515.95,243.181 1506.06,246.478 1525.83,266.24z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+    										<Path.RenderTransform>
+    											<TransformGroup>
+    												<RotateTransform Angle="0" />
+    												<ScaleTransform ScaleX="1" ScaleY="1" />
+    											</TransformGroup>
+    										</Path.RenderTransform>
+    									</Path>
+    								</Grid>
+    							</Viewbox>
+    						</Grid>
+    						<TextBlock
+    							x:Name="TextLabel"
+    							Foreground="{StaticResource AppBarItemForegroundThemeBrush}"
+    							Margin="0,0,2,0"
+    							FontSize="12"
+    							TextAlignment="Center"
+    							Width="88"
+    							MaxHeight="32"
+    							TextTrimming="WordEllipsis"
+    							Style="{StaticResource BasicTextStyle}" Text="{TemplateBinding Content}"/>
+    					</StackPanel>
+    					<Rectangle
+    						x:Name="FocusVisualWhite"
+    						IsHitTestVisible="False"
+    						Stroke="{StaticResource FocusVisualWhiteStrokeThemeBrush}"
+    						StrokeEndLineCap="Square"
+    						StrokeDashArray="1,1"
+    						Opacity="0"
+    						StrokeDashOffset="1.5"/>
+    					<Rectangle
+    						x:Name="FocusVisualBlack"
+    						IsHitTestVisible="False"
+    						Stroke="{StaticResource FocusVisualBlackStrokeThemeBrush}"
+    						StrokeEndLineCap="Square"
+    						StrokeDashArray="1,1"
+    						Opacity="0"
+    						StrokeDashOffset="0.5"/>
+
+    				</Grid>
+    			</ControlTemplate>
+    		</Setter.Value>
+    	</Setter>
+    </Style>
 
 <!-- Collection of items displayed by this page -->
 

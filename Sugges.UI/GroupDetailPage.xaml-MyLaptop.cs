@@ -4,7 +4,6 @@ using Sugges.UI.Logic.Enumerations;
 using Sugges.UI.Logic.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Windows.Foundation;
@@ -18,36 +17,20 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Grouped Items Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234231
+// The Group Detail Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234229
 
 namespace Sugges.UI
 {
     /// <summary>
-    /// A page that displays a grouped collection of items.
+    /// A page that displays an overview of a single group, including a preview of the items
+    /// within the group.
     /// </summary>
-    public sealed partial class GroupedItemsPage : Sugges.UI.Common.LayoutAwarePage
+    public sealed partial class GroupDetailPage : Sugges.UI.Common.LayoutAwarePage
     {
-        public Windows.ApplicationModel.Activation.LaunchActivatedEventArgs LaunchArgs;
-        public static GroupedItemsPage Current;
-
-        public GroupedItemsPage()
+        public GroupDetailPage()
         {
-            // This is a static public property that will allow downstream pages to get
-            // a handle to the MainPage instance in order to call methods that are in this class.
-            Current = this;
-
             this.InitializeComponent();
-            this.Loaded += GroupedItemsPage_Loaded;
-        }
-
-        async void GroupedItemsPage_Loaded(object sender, RoutedEventArgs e)
-        {
-            //Initialize window
-            btnDelete.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-
-            await MainViewModel.InitializeAsync();
-            await MainViewModel.LoadSuggestionsAsync();
-            await MainViewModel.LoadTripsAsync();
+            this.btnDelete.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
         }
 
         /// <summary>
@@ -61,43 +44,20 @@ namespace Sugges.UI
         /// session.  This will be null the first time a page is visited.</param>
         protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
         {
-            try
-            {
-                // TODO: Create an appropriate data model for your problem domain to replace the sample data
-                var dataGroups = MainViewModel.GetGroups((String)navigationParameter);
-                this.DefaultViewModel["Groups"] = dataGroups;
-            }
-            catch (Exception)
-            {
-                App.ShowSimpleMessage("Sorry, an error has ocurred, please try to restart de application.", "Starting app");
-            }
+            // TODO: Create an appropriate data model for your problem domain to replace the sample data
+            GroupViewModel group = MainViewModel.GetGroup((Int32)navigationParameter);
+            this.DefaultViewModel["Group"] = group;
+            this.DefaultViewModel["Items"] = group.Items;
         }
 
         /// <summary>
-        /// Invoked when a group header is clicked.
-        /// </summary>
-        /// <param name="sender">The Button used as a group header for the selected group.</param>
-        /// <param name="e">Event data that describes how the click was initiated.</param>
-        void Header_Click(object sender, RoutedEventArgs e)
-        {
-            // Determine what group the Button instance represents
-            var group = (sender as FrameworkElement).DataContext;
-
-            // Navigate to the appropriate destination page, configuring the new page
-            // by passing required information as a navigation parameter
-            this.Frame.Navigate(typeof(GroupDetailPage), ((GroupViewModel)group).Identifier);
-        }
-
-        /// <summary>
-        /// Invoked when an item within a group is clicked.
+        /// Invoked when an item is clicked.
         /// </summary>
         /// <param name="sender">The GridView (or ListView when the application is snapped)
         /// displaying the item clicked.</param>
         /// <param name="e">Event data that describes the item clicked.</param>
         void ItemView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            // Navigate to the appropriate destination page, configuring the new page
-            // by passing required information as a navigation parameter
             TripViewModel item = ((TripViewModel)e.ClickedItem);
             if (item.Identifier == -1)
             {
@@ -109,6 +69,13 @@ namespace Sugges.UI
                 MainViewModel.SetSelectedTrip(item);
                 this.Frame.Navigate(typeof(ItemDetailPage), item.Identifier);
             }
+        }
+
+        private void btnAdd_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            this.bottomAppBar.IsOpen = false;
+            var trips = new Flyout();
+            trips.ShowFlyout(new ManageTrip());
         }
 
         private void itemListView_SelectionChanged(object sender, Windows.UI.Xaml.Controls.SelectionChangedEventArgs e)
@@ -133,8 +100,8 @@ namespace Sugges.UI
                 itemGridView.SelectedItems.Remove(item);
                 ((TripViewModel)item).IsSelected = false;
             }
-            
-        	if (this.itemListView.SelectedItems.Count > 0)
+
+            if (this.itemListView.SelectedItems.Count > 0)
                 btnDelete.Visibility = Windows.UI.Xaml.Visibility.Visible;
             else
                 btnDelete.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
@@ -163,7 +130,7 @@ namespace Sugges.UI
                 ((TripViewModel)item).IsSelected = false;
             }
 
-        	if (this.itemGridView.SelectedItems.Count > 0)
+            if (this.itemGridView.SelectedItems.Count > 0)
                 btnDelete.Visibility = Windows.UI.Xaml.Visibility.Visible;
             else
                 btnDelete.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
@@ -172,7 +139,7 @@ namespace Sugges.UI
         async private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             // Create the message dialog and set its content and title
-            var messageDialog = new MessageDialog("The seleted trips will be deleting permanently. Are you sure to do this action?", "Deleting trips");
+            var messageDialog = new MessageDialog("The seleted trips will be deleting permanently. Are your sure to do this action?", "Deleting trips");
 
             // Add commands and set their callbacks
             messageDialog.Commands.Add(new UICommand("Yes", (command) =>
@@ -190,21 +157,6 @@ namespace Sugges.UI
 
             // Show the message dialog
             await messageDialog.ShowAsync();
-        }
-
-        private void btnAdd_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            this.bottomAppBar.IsOpen = false;
-            var trips = new SettingsFlyout();
-            trips.ShowFlyout(new ManageTrip());
-        }
-
-        async internal void NavigateToLaunchedFromSecondaryTile()
-        {
-            int identifier = Convert.ToInt32(Current.LaunchArgs.Arguments.Split('=').ToList()[1].ToString());
-            TripViewModel item = await MainViewModel.GetTrip(identifier);
-            MainViewModel.SetSelectedTrip(item);
-            this.Frame.Navigate(typeof(ItemDetailPage), item.Identifier);
         }
     }
 }

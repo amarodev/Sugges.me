@@ -23,10 +23,9 @@ namespace Sugges.UI.Logic.Models
         Task<int> SaveItemAsync(ItemViewModel item);
         Task UpdateTrip(TripViewModel tripViewModel);
         Task UpdateItem(ItemViewModel item);
-        void RegisterTrashImage(string name);
-
+        Task RegisterTrashImage(string name);
         Task<List<DataModel.TrashImage>> GetTrashImagesAsync();
-
         Task DeleteTrashImageAsync(string p);
+        Task<TripViewModel> GetTripAsync(int identifier);
     }
 }

@@ -18,20 +18,14 @@
             x:Name="itemsViewSource"
             Source="{Binding Items}"
             d:Source="{Binding AllGroups[0].Items, Source={d:DesignInstance Type=viewModels:MainViewModel, IsDesignTimeCreatable=True}}"/>
+		<CollectionViewSource
+            x:Name="groupedItemsViewSource"
+            Source="{Binding Groups}"
+            IsSourceGrouped="true"
+            ItemsPath="Items"
+            d:Source="{Binding AllGroups, Source={d:DesignInstance Type=viewModels:MainViewModel, IsDesignTimeCreatable=True}}"/>
     </Page.Resources>
-    <common:LayoutAwarePage.BottomAppBar>
-        <AppBar x:Name="bottomAppBar" Background="{StaticResource SuggesFlyoutBackgroundColor}" BorderBrush="{x:Null}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                    <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="btnDelete_Click" Style="{StaticResource SuggesDeleteAppBarButtonStyle}"/>
-                    <Button x:Name="btnAdd" Content="Add Trip" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource SuggesAddAppBarButtonStyle}" Click="btnAdd_Click"/>
-                </StackPanel>
-            </Grid>
-        </AppBar>
-    </common:LayoutAwarePage.BottomAppBar>
+
     <!--
         This grid acts as a root panel for the page that defines two rows:
         * Row 0 contains the back button and page title
@@ -48,24 +42,34 @@
         </Grid.RowDefinitions>
 
         <!-- Horizontal scrolling grid used in most view states -->
-        <GridView
-            x:Name="itemGridView"
-            AutomationProperties.AutomationId="ItemGridView"
-            AutomationProperties.Name="Items In Group"
-            TabIndex="1"
-            Padding="110,130,120,50"
-            ItemsSource="{Binding Source={StaticResource itemsViewSource}}"
-            ItemTemplate="{StaticResource SuggesGroupedItemListView_ItemsGenerated}"
-            IsSwipeEnabled="True"
-            SelectionMode="Multiple"
-            IsItemClickEnabled="True"
-            ItemClick="ItemView_ItemClick" Grid.RowSpan="2" 
-            SelectionChanged="itemGridView_SelectionChanged" 
-            ItemContainerStyle="{StaticResource SuggesGroupedItemGridView_ItemsGenerated_Container}" Margin="0,15,0,0">
-        	<GridView.Foreground>
-        		<ImageBrush/>
-        	</GridView.Foreground>
-        </GridView>
+
+        <!-- Vertical scrolling list only used when snapped -->
+        <StackPanel x:Name="stackPanel" Orientation="Horizontal" Grid.RowSpan="2">
+        	<StackPanel.Background>
+        		<ImageBrush ImageSource="Assets/Background.png"/>
+        	</StackPanel.Background>
+    		<GridView
+    			x:Name="itemGridView"
+    			AutomationProperties.AutomationId="ItemGridView"
+    			AutomationProperties.Name="Items In Group"
+    			TabIndex="1"
+    			Padding="120,126,120,50"
+    			ItemsSource="{Binding Source={StaticResource itemsViewSource}}"
+    			ItemTemplate="{StaticResource SuggesGroupItemGridView_ItemsGenerated}"
+    			SelectionMode="None"
+    			IsSwipeEnabled="false"
+    			IsItemClickEnabled="True"
+    			ItemClick="ItemView_ItemClick" Width="600">
+    			<GridView.Background>
+    				<ImageBrush/>
+    			</GridView.Background>
+    			<GridView.Foreground>
+    				<ImageBrush/>
+    			</GridView.Foreground>
+    		</GridView>
+			<!-- Horizontal scrolling grid used in most view states -->
+
+        </StackPanel>
 
         <!-- Vertical scrolling list only used when snapped -->
         <ListView
@@ -75,14 +79,19 @@
             TabIndex="1"
             Grid.Row="1"
             Visibility="Collapsed"
-            Padding="10,0,0,40"
+            Padding="10,0,0,60"
             ItemsSource="{Binding Source={StaticResource itemsViewSource}}"
             ItemTemplate="{StaticResource SuggesGroupedItemListView_ItemsGenerated}"
-            SelectionMode="Multiple"
-            IsSwipeEnabled="True"
+            SelectionMode="None"
+            IsSwipeEnabled="false"
             IsItemClickEnabled="True"
-            ItemClick="ItemView_ItemClick" 
-            ItemContainerStyle="{StaticResource SuggesGroupedItemListView_ItemsGenerated_Container}" SelectionChanged="itemListView_SelectionChanged">
+            ItemClick="ItemView_ItemClick">
+
+            <ListView.Header>
+                <StackPanel>
+                    <TextBlock Margin="10,0,18,5" Text="{Binding Description}" Style="{StaticResource BodyTextStyle}" Foreground="{StaticResource SuggesSecondaryDescriptionForegroundColor}"/>
+                </StackPanel>
+            </ListView.Header>
         </ListView>
 
         <!-- Back button and page title -->
@@ -91,12 +100,8 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource SuggesBackButtonStyle}" />
-			<Button x:Name="backButtonSnapped" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource SuggesSnappedBackButtonStyle}" Visibility="Collapsed"/>
-            <StackPanel Grid.Column="1" Margin="0,55,30,0" Orientation="Vertical">
-            	<TextBlock x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource PageHeaderTextStyle}" IsHitTestVisible="false" Foreground="{StaticResource SuggesFlyoutBackgroundColor}" Margin="0" FontSize="48" Height="45" TextTrimming="WordEllipsis" />
-            	<TextBlock x:Name="pageDescription" Text="{Binding Description}" Style="{StaticResource PageHeaderTextStyle}" IsHitTestVisible="false" Foreground="{StaticResource SuggesSecondaryDescriptionForegroundColor}" Margin="0,-15,0,0" FontSize="21.333" Height="40" TextTrimming="WordEllipsis" />
-            </StackPanel>
+            <Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Template="{StaticResource SuggesSnappedPageBackButtonStyle}"/>
+            <TextBlock x:Name="pageTitle" Style="{StaticResource PageHeaderTextStyle}" Grid.Column="1" IsHitTestVisible="false" Foreground="{StaticResource SuggesFlyoutBackgroundColor}" Text="{Binding Title}"/>
         </Grid>
 
         <VisualStateManager.VisualStateGroups>
@@ -138,42 +143,13 @@
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemListView" Storyboard.TargetProperty="Visibility">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
                         </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="backButtonSnapped">
-                        	<DiscreteObjectKeyFrame KeyTime="0">
-                        		<DiscreteObjectKeyFrame.Value>
-                        			<Visibility>Visible</Visibility>
-                        		</DiscreteObjectKeyFrame.Value>
-                        	</DiscreteObjectKeyFrame>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="backButton">
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="stackPanel">
                         	<DiscreteObjectKeyFrame KeyTime="0">
                         		<DiscreteObjectKeyFrame.Value>
                         			<Visibility>Collapsed</Visibility>
                         		</DiscreteObjectKeyFrame.Value>
                         	</DiscreteObjectKeyFrame>
                         </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Margin)" Storyboard.TargetName="backButtonSnapped">
-                        	<DiscreteObjectKeyFrame KeyTime="0">
-                        		<DiscreteObjectKeyFrame.Value>
-                        			<Thickness>20,0,0,25</Thickness>
-                        		</DiscreteObjectKeyFrame.Value>
-                        	</DiscreteObjectKeyFrame>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Height)" Storyboard.TargetName="pageTitle">
-                        	<DiscreteObjectKeyFrame KeyTime="0">
-                        		<DiscreteObjectKeyFrame.Value>
-                        			<x:Double>30</x:Double>
-                        		</DiscreteObjectKeyFrame.Value>
-                        	</DiscreteObjectKeyFrame>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Margin)" Storyboard.TargetName="pageTitle">
-                        	<DiscreteObjectKeyFrame KeyTime="0">
-                        		<DiscreteObjectKeyFrame.Value>
-                        			<Thickness>0,15,0,0</Thickness>
-                        		</DiscreteObjectKeyFrame.Value>
-                        	</DiscreteObjectKeyFrame>
-                        </ObjectAnimationUsingKeyFrames>
-                        <DoubleAnimation Duration="0" To="32" Storyboard.TargetProperty="(TextBlock.FontSize)" Storyboard.TargetName="pageTitle" d:IsOptimized="True"/>
                     </Storyboard>
                 </VisualState>
             </VisualStateGroup>

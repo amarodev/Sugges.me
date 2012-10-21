@@ -27,15 +27,8 @@ namespace Sugges.UI
     /// </summary>
     public sealed partial class GroupedItemsPage : Sugges.UI.Common.LayoutAwarePage
     {
-        public Windows.ApplicationModel.Activation.LaunchActivatedEventArgs LaunchArgs;
-        public static GroupedItemsPage Current;
-
         public GroupedItemsPage()
         {
-            // This is a static public property that will allow downstream pages to get
-            // a handle to the MainPage instance in order to call methods that are in this class.
-            Current = this;
-
             this.InitializeComponent();
             this.Loaded += GroupedItemsPage_Loaded;
         }
@@ -61,16 +54,9 @@ namespace Sugges.UI
         /// session.  This will be null the first time a page is visited.</param>
         protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
         {
-            try
-            {
-                // TODO: Create an appropriate data model for your problem domain to replace the sample data
-                var dataGroups = MainViewModel.GetGroups((String)navigationParameter);
-                this.DefaultViewModel["Groups"] = dataGroups;
-            }
-            catch (Exception)
-            {
-                App.ShowSimpleMessage("Sorry, an error has ocurred, please try to restart de application.", "Starting app");
-            }
+            // TODO: Create an appropriate data model for your problem domain to replace the sample data
+            var dataGroups = MainViewModel.GetGroups((String)navigationParameter);
+            this.DefaultViewModel["Groups"] = dataGroups;
         }
 
         /// <summary>
@@ -195,16 +181,8 @@ namespace Sugges.UI
         private void btnAdd_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             this.bottomAppBar.IsOpen = false;
-            var trips = new SettingsFlyout();
+            var trips = new Flyout();
             trips.ShowFlyout(new ManageTrip());
-        }
-
-        async internal void NavigateToLaunchedFromSecondaryTile()
-        {
-            int identifier = Convert.ToInt32(Current.LaunchArgs.Arguments.Split('=').ToList()[1].ToString());
-            TripViewModel item = await MainViewModel.GetTrip(identifier);
-            MainViewModel.SetSelectedTrip(item);
-            this.Frame.Navigate(typeof(ItemDetailPage), item.Identifier);
         }
     }
 }

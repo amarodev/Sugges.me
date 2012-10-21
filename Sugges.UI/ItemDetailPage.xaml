@@ -35,6 +35,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button x:Name="btnPin" Content="Pin" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource SuggesPinAppBarButtonStyle}" Click="btnPin_Click"/>
                     <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="btnDelete_Click" Style="{StaticResource SuggesDeleteAppBarButtonStyle}"/>                    
                     <Button x:Name="btnAdd" Content="Add Item" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource SuggesAddAppBarButtonStyle}" Click="btnAdd_Click"/>
                 </StackPanel>
@@ -175,6 +176,13 @@
                     			</DiscreteObjectKeyFrame.Value>
                     		</DiscreteObjectKeyFrame>
                     	</ObjectAnimationUsingKeyFrames>
+                    	<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="btnPin">
+                    		<DiscreteObjectKeyFrame KeyTime="0">
+                    			<DiscreteObjectKeyFrame.Value>
+                    				<Visibility>Collapsed</Visibility>
+                    			</DiscreteObjectKeyFrame.Value>
+                    		</DiscreteObjectKeyFrame>
+                    	</ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
             </VisualStateGroup>
@@ -190,7 +198,7 @@
             ItemsSource="{Binding Source={StaticResource itemsViewSource}}"
             ItemTemplate="{StaticResource SuggesGroupedItemGridView_ItemsGenerated_Items}"
             SelectionMode="Multiple"
-            IsSwipeEnabled="false"
+            IsSwipeEnabled="True"
             IsItemClickEnabled="True"
 			ItemContainerStyle="{StaticResource SuggesGroupedItemGridView_ItemsGenerated_Container}" ItemClick="itemGridView_ItemClick" SelectionChanged="itemGridView_SelectionChanged" >
 			<GridView.Header>
@@ -241,7 +249,7 @@
             ItemsSource="{Binding Source={StaticResource itemsViewSource}}"
             ItemTemplate="{StaticResource SuggesGroupedItemListView_ItemsGenerated_Items}"
             SelectionMode="Multiple"
-            IsSwipeEnabled="false" 
+            IsSwipeEnabled="True" 
 			Visibility="Collapsed" 
 			ItemContainerStyle="{StaticResource SuggesItemListView_ItemsGenerated_Container}" ItemClick="itemListView_ItemClick" SelectionChanged="itemListView_SelectionChanged">
 			<ListView.Header>

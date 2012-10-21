@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.DataTransfer;
@@ -13,7 +12,6 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.System;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -43,19 +41,6 @@ namespace Sugges.UI
             this.Suspending += OnSuspending;
         }
 
-        /// <summary>
-        /// Method to show a simple message
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="title"></param>
-        /// <returns></returns>
-        async public static Task ShowSimpleMessage(string message, string title)
-        {
-            var messageDialog = new MessageDialog(message, title);
-            messageDialog.Commands.Add(new UICommand("OK", (command) => { }));
-            messageDialog.DefaultCommandIndex = 1;
-            await messageDialog.ShowAsync();
-        }
 
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
@@ -104,10 +89,6 @@ namespace Sugges.UI
                     throw new Exception("Failed to create initial page");
                 }
             }
-            else
-            {
-                NavigateToLaunchedFromSecondaryTile(args);
-            }
 
             //Register to events
             // Added to make sure the event handler for CommandsRequested in cleaned up before other scenarios
@@ -117,45 +98,20 @@ namespace Sugges.UI
             Window.Current.Activate();
         }
 
-        private static void NavigateToLaunchedFromSecondaryTile(LaunchActivatedEventArgs args)
-        {
-            if (GroupedItemsPage.Current != null)
-            {
-                GroupedItemsPage.Current.LaunchArgs = args;
-                if (GroupedItemsPage.Current.LaunchArgs != null)
-                {
-                    if (!String.IsNullOrEmpty(GroupedItemsPage.Current.LaunchArgs.Arguments))
-                    {
-                        GroupedItemsPage.Current.NavigateToLaunchedFromSecondaryTile();
-                    }
-                }
-            }
-        }
-
-        async void OnSettingsCommand(IUICommand command)
+        void OnSettingsCommand(IUICommand command)
         {
             SettingsCommand settingsCommand = (SettingsCommand)command;
-            switch(command.Id.ToString())
-            {
-                case "about":
-                    var about = new SettingsFlyout();
-                    about.ShowFlyout(new About());
-                    break;
-                case "privacyPolicy":
-                    await Launcher.LaunchUriAsync(new Uri("http://sugges.me/privacy.aspx"));
-                    break;
-            }
+            //TODO: If there are several command, evaluate the settingsCommand
+            var trips = new Flyout();
+            trips.ShowFlyout(new About());
         }
 
         void onCommandsRequested(SettingsPane settingsPane, SettingsPaneCommandsRequestedEventArgs eventArgs)
         {
             UICommandInvokedHandler handler = new UICommandInvokedHandler(OnSettingsCommand);
 
-            SettingsCommand aboutCommand = new SettingsCommand("about", "About", handler);
+            SettingsCommand aboutCommand = new SettingsCommand("aboutFlyout", "About", handler);
             eventArgs.Request.ApplicationCommands.Add(aboutCommand);
-
-            SettingsCommand policyCommand = new SettingsCommand("privacyPolicy", "Privacy Policy", handler);
-            eventArgs.Request.ApplicationCommands.Add(policyCommand);
         }
 
         /// <summary>

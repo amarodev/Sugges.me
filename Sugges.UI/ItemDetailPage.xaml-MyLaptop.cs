@@ -12,7 +12,6 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Popups;
-using Windows.UI.StartScreen;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -32,20 +31,12 @@ namespace Sugges.UI
     /// </summary>
     public sealed partial class ItemDetailPage : Sugges.UI.Common.LayoutAwarePage
     {
-        TripViewModel selectedTrip = new TripViewModel();
-        private static bool isRegisteredToShare = false;
-
-        public Windows.ApplicationModel.Activation.LaunchActivatedEventArgs LaunchArgs;
-        public static GroupedItemsPage Current;
-
         public ItemDetailPage()
         {
             this.InitializeComponent();
 
-            if (!isRegisteredToShare)
-                DataTransferManager.GetForCurrentView().DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.DataRequested);
-            
-            isRegisteredToShare = true;
+            DataTransferManager.GetForCurrentView().DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.DataRequested);
+
             this.btnDelete.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
         }
 
@@ -90,14 +81,11 @@ namespace Sugges.UI
             }
 
             // TODO: Create an appropriate data model for your problem domain to replace the sample data
-            selectedTrip = await MainViewModel.GetFullTrip((Int32)navigationParameter);
-            RemoveFakeTrip(selectedTrip);
+            TripViewModel item = await MainViewModel.GetFullTrip((Int32)navigationParameter);
+            RemoveFakeTrip(item);
 
-            this.DefaultViewModel["ItemGroups"] = selectedTrip.ItemGroups;
-            this.DefaultViewModel["Trips"] = selectedTrip.Group.Items;
-
-            if (SecondaryTile.Exists("SuggesMePin_" + selectedTrip.Identifier.ToString()))
-                this.btnPin.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            this.DefaultViewModel["ItemGroups"] = item.ItemGroups;
+            this.DefaultViewModel["Trips"] = item.Group.Items;
                         
         }
 
@@ -122,7 +110,7 @@ namespace Sugges.UI
         private void btnAdd_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             this.bottomAppBar.IsOpen = false;
-            var trips = new SettingsFlyout();
+            var trips = new Flyout();
             trips.ShowFlyout(new ManageItem());
         }
 
@@ -159,60 +147,53 @@ namespace Sugges.UI
 
         async private void btnSelectPhoto_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            try
+            FileOpenPicker openPicker = new FileOpenPicker();
+            openPicker.ViewMode = PickerViewMode.Thumbnail;
+            openPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+            openPicker.FileTypeFilter.Add(".jpg");
+            openPicker.FileTypeFilter.Add(".jpeg");
+            openPicker.FileTypeFilter.Add(".png");
+
+            StorageFile selectedFile = await openPicker.PickSingleFileAsync();
+
+            if (selectedFile != null)
             {
-                FileOpenPicker openPicker = new FileOpenPicker();
-                openPicker.ViewMode = PickerViewMode.Thumbnail;
-                openPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-                openPicker.FileTypeFilter.Add(".jpg");
-                openPicker.FileTypeFilter.Add(".jpeg");
-                openPicker.FileTypeFilter.Add(".png");
 
-                StorageFile selectedFile = await openPicker.PickSingleFileAsync();
+                var localFolder = ApplicationData.Current.LocalFolder;
+                StorageFolder imagesFolder = await localFolder.CreateFolderAsync("images", CreationCollisionOption.OpenIfExists);
 
-                if (selectedFile != null)
+                TripViewModel trip = MainViewModel.GetSelectedTrip();
+                var oldImage = trip.LocalPathImage;
+                var desiredName = string.Format("{0}.jpg", trip.Identifier.ToString());
+
+                if (!oldImage.Equals("/Assets/Trip.png"))
                 {
-
-                    var localFolder = ApplicationData.Current.LocalFolder;
-                    StorageFolder imagesFolder = await localFolder.CreateFolderAsync("images", CreationCollisionOption.OpenIfExists);
-
-                    TripViewModel trip = MainViewModel.GetSelectedTrip();
-                    var oldImage = trip.LocalPathImage;
-                    var desiredName = string.Format("{0}.jpg", trip.Identifier.ToString());
-
-                    if (!oldImage.Equals("/Assets/Trip.png"))
+                    try
                     {
-                        try
-                        {
-                            StorageFile oldFile = await imagesFolder.GetFileAsync(desiredName);
-                            await oldFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
-                            oldFile = null;
-                        }
-                        catch (Exception)
-                        {
-                            ///TODO: GridView please free the imageeeeeeeee! :'(
-                            MainViewModel.RegisterTrashImage(desiredName);
-                        }
+                        StorageFile oldFile = await imagesFolder.GetFileAsync(desiredName);
+                        await oldFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+                        oldFile = null;
                     }
-
-                    //StorageFile newFile = await imagesFolder.CreateFileAsync(desiredName);
-                    StorageFile newFile = await imagesFolder.CreateFileAsync(desiredName, CreationCollisionOption.GenerateUniqueName);
-                    await selectedFile.CopyAndReplaceAsync(newFile);
-
-                    //MainViewModel.UpdatePhotoToSelectedTrip(string.Format("ms-appdata:///local/images/{0}", desiredName));
-                    MainViewModel.UpdatePhotoToSelectedTrip(string.Format("ms-appdata:///local/images/{0}", newFile.Name));
+                    catch (Exception)
+                    {
+                        ///TODO: GridView please free the imageeeeeeeee! :'(
+                        MainViewModel.RegisterTrashImage(desiredName);
+                    }
                 }
-            }
-            catch (Exception)
-            {
-                App.ShowSimpleMessage("Sorry, an error has ocurred, please try again.", "Selecting photo");
+                
+                //StorageFile newFile = await imagesFolder.CreateFileAsync(desiredName);
+                StorageFile newFile = await imagesFolder.CreateFileAsync(desiredName, CreationCollisionOption.GenerateUniqueName);
+                await selectedFile.CopyAndReplaceAsync(newFile);
+
+                //MainViewModel.UpdatePhotoToSelectedTrip(string.Format("ms-appdata:///local/images/{0}", desiredName));
+                MainViewModel.UpdatePhotoToSelectedTrip(string.Format("ms-appdata:///local/images/{0}", newFile.Name));
             }
         }
 
         private void btnEdit_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
         	this.bottomAppBar.IsOpen = false;
-            var trips = new SettingsFlyout();
+            var trips = new Flyout();
             trips.ShowFlyout(new ManageTrip(MainViewModel.GetSelectedTrip()));
         }
 
@@ -221,7 +202,7 @@ namespace Sugges.UI
             if (((ItemViewModel)e.ClickedItem).Identifier != -1)
             {
                 this.bottomAppBar.IsOpen = false;
-                var trips = new SettingsFlyout();
+                var trips = new Flyout();
                 trips.ShowFlyout(new ManageItem((ItemViewModel)e.ClickedItem));
             }
         }
@@ -289,46 +270,8 @@ namespace Sugges.UI
             if (((ItemViewModel)e.ClickedItem).Identifier != -1)
             {
                 this.bottomAppBar.IsOpen = false;
-                var trips = new SettingsFlyout();
+                var trips = new Flyout();
                 trips.ShowFlyout(new ManageItem((ItemViewModel)e.ClickedItem));
-            }
-        }
-
-        async private void btnPin_Click(object sender, RoutedEventArgs e)
-        {
-            if (selectedTrip.LocalPathImage == "/Assets/Trip.png")
-            {
-                await App.ShowSimpleMessage("Please, select a custom image for your trip.", "Default Image");
-            }
-            else
-            {
-                this.bottomAppBar.IsSticky = true;
-                string shortName = selectedTrip.Title;
-                string displayName = selectedTrip.Description;
-                string tileActivationArguments = "Trip=" + selectedTrip.Identifier.ToString();
-                Uri logo = new Uri(selectedTrip.LocalPathImage);
-
-                SecondaryTile secondaryTile = new SecondaryTile("SuggesMePin_" + selectedTrip.Identifier.ToString(),
-                                                    shortName,
-                                                    displayName,
-                                                    tileActivationArguments,
-                                                    TileOptions.ShowNameOnWideLogo,
-                                                    logo,
-                                                    logo);
-
-                secondaryTile.ForegroundText = ForegroundText.Light;
-                secondaryTile.SmallLogo = new Uri("ms-appx:///Assets/SmallLogoWithBackground.png");
-
-                FrameworkElement internalSender = (FrameworkElement)this.btnPin;
-                Windows.UI.Xaml.Media.GeneralTransform buttonTransform = internalSender.TransformToVisual(null);
-                Windows.Foundation.Point point = buttonTransform.TransformPoint(new Point());
-                Windows.Foundation.Rect rect = new Rect(point, new Size(250, 250));
-
-                bool isPinned = await secondaryTile.RequestCreateForSelectionAsync(rect, Windows.UI.Popups.Placement.Above);
-                this.bottomAppBar.IsSticky = false;
-
-                if (isPinned)
-                    this.btnPin.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             }
         }
 
