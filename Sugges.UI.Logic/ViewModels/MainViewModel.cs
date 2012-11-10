@@ -42,16 +42,17 @@ namespace Sugges.UI.Logic.ViewModels
                 Title = "Your trips",
                 Description = "Your planned trips",
                 LocalPathImage = "/Assets/Trip.png",
+                AreSuggestions = false
             });
 
-            this.AllGroups.Add(new GroupViewModel()
-            {
-                Identifier = 1,
-                Title = "Suggestions",
-                Description = "Suggestions from our platform",
-                LocalPathImage = "/Assets/Suggestion.png",
-                AreSuggestions = true
-            });
+            //this.AllGroups.Add(new GroupViewModel()
+            //{
+            //    Identifier = 1,
+            //    Title = "Suggestions",
+            //    Description = "Suggestions from our platform",
+            //    LocalPathImage = "/Assets/Suggestion.png",
+            //    AreSuggestions = true
+            //});
         }
 
         #region Properties
@@ -308,13 +309,13 @@ namespace Sugges.UI.Logic.ViewModels
 
         public static void CompleteFakeSuggestions(GroupViewModel group)
         {
-            if (group.Items.Count < 4)
-            {
-                for (int i = group.Items.Count; i < 4; i++)
-                {
-                   group.CreateFake(FakeType.Suggestion);
-                }
-            }
+            //if (group.Items.Count < 4)
+            //{
+            //    for (int i = group.Items.Count; i < 4; i++)
+            //    {
+            //       group.CreateFake(FakeType.Suggestion);
+            //    }
+            //}
         }
 
         #region Static Default Methods
@@ -364,7 +365,7 @@ namespace Sugges.UI.Logic.ViewModels
         async public static Task InitializeAsync()
         {
             _mainViewModel.AllGroups[0].Items.Clear();
-            _mainViewModel.AllGroups[1].Items.Clear();
+            //_mainViewModel.AllGroups[1].Items.Clear();
             await model.InitializeAsync();
 
             await DeleteTrashImages();

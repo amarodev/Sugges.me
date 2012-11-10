@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="35369soreygarcia.Sugges.me" Publisher="CN=7D065A18-0574-41F0-B838-F82F65E31EB3" Version="1.0.0.20" />
+  <Identity Name="35369soreygarcia.Sugges.me" Publisher="CN=7D065A18-0574-41F0-B838-F82F65E31EB3" Version="1.0.0.26" />
   <Properties>
     <DisplayName>Sugges.me</DisplayName>
     <PublisherDisplayName>soreygarcia</PublisherDisplayName>

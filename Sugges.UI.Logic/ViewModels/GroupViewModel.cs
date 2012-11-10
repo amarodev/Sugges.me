@@ -55,8 +55,8 @@ namespace Sugges.UI.Logic.ViewModels
                 fake = new TripViewModel()
                 {
                     Identifier = -1,
-                    Title = "Comming Soon",
-                    Description = "We are working",
+                    Title = "Suggestion",
+                    Description = "There's no suggestions yet",
                     LocalPathImage = "Assets/Suggestion.png",
                     IsSuggestion = true,
                 };

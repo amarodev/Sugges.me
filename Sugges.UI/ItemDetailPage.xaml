@@ -14,8 +14,9 @@
 
     <common:LayoutAwarePage.Resources>
 
-        <Converters:DateConverter x:Key="DateConverter"/>
-        <Converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <Converters:DateConverter x:Key="dateConverter"/>
+        <Converters:ColorMoneyConverter x:Key="colorMoneyConverter"/>
+        <Converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
         
         <!-- Collection of items displayed by this page -->
         <CollectionViewSource
