@@ -313,5 +313,37 @@ namespace Sugges.UI.Logic.Models
 
             return trip;
         }
+
+
+        async public Task<List<TripViewModel>> GetGroupsByCriteria(string queryText)
+        {
+            SQLite.SQLiteAsyncConnection context = new SQLite.SQLiteAsyncConnection(connectionString);
+
+            List<TripViewModel> trips = new List<TripViewModel>();
+            //trips have the parent null, items have a trip as parent
+            List<Item> result = await context.Table<Item>().Where(p => p.IsSuggestion == false && p.Parent == 0
+                && (p.Title.Contains(queryText) || p.Description.Contains(queryText))).ToListAsync();
+
+            foreach (Item item in result)
+            {
+                trips.Add(new TripViewModel()
+                {
+                    Title = item.Title,
+                    Description = item.Description,
+                    EndDate = Convert.ToDateTime(item.EndDate),
+                    StartDate = Convert.ToDateTime(item.StartDate),
+                    Category = (Int16)Sugges.UI.Logic.Enumerations.Category.Trips,
+                    Cost = item.Cost,
+                    Identifier = item.Identifier,
+                    Latitude = item.Latitude,
+                    Longitude = item.Longitude,
+                    RemotePathImage = item.Image == null ? "/Assets/Trip.png" : item.Image,
+                    LocalPathImage = item.Image == null ? "/Assets/Trip.png" : item.Image,
+                    Traveler = new Guid(item.Traveler)
+                });
+            }
+
+            return trips;
+        }
     }
 }

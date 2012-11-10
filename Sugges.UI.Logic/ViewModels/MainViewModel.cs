@@ -560,5 +560,27 @@ namespace Sugges.UI.Logic.ViewModels
         {
             model.RegisterTrashImage(name);
         }
+
+        async public static Task<ObservableCollection<GroupViewModel>> GetGroupsByCriteria(string queryText)
+        {
+            ObservableCollection<GroupViewModel> query = new ObservableCollection<GroupViewModel>();
+            List<TripViewModel> trips = await model.GetGroupsByCriteria(queryText);
+
+            query.Add(new GroupViewModel()
+            {
+                Identifier = 0,
+                Title = "Your trips",
+                Description = "Result of a searcg",
+                LocalPathImage = "/Assets/Trip.png",
+                AreSuggestions = false
+            });
+
+            foreach (TripViewModel trip in trips)
+            {
+                query[0].Items.Add(trip);
+            }
+
+            return query;
+        }
     }
 }

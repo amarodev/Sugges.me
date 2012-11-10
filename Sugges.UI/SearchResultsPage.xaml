@@ -1,0 +1,233 @@
+﻿<common:LayoutAwarePage
+    x:Name="pageRoot"
+    x:Class="Sugges.UI.SearchResultsPage"
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Sugges.UI"
+    xmlns:viewModels="using:Sugges.UI.Logic.ViewModels"
+    xmlns:common="using:Sugges.UI.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:ExtensionType="Search">
+
+    <Page.Resources>
+        <!--
+            Collection of grouped items displayed by this page, bound to a subset
+            of the complete item list because items in groups cannot be virtualized
+        -->
+        <CollectionViewSource
+            x:Name="groupedItemsViewSource"
+            Source="{Binding GroupsByCriteria}"
+            IsSourceGrouped="true"
+            ItemsPath="Items"
+            d:Source="{Binding AllGroups, Source={d:DesignInstance Type=viewModels:MainViewModel, IsDesignTimeCreatable=True}}"/>
+        <CollectionViewSource x:Name="resultsViewSource" Source="{Binding Results}"/>
+        <CollectionViewSource x:Name="filtersViewSource" Source="{Binding Filters}"/>
+        <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <!-- TODO: Update the following string to be the name of your app -->
+        <x:String x:Key="AppName">Sugges.me</x:String>
+    </Page.Resources>
+
+    <!--
+        This grid acts as a root panel for the page that defines two rows:
+        * Row 0 contains the back button and page title
+        * Row 1 contains the rest of the page layout
+    -->
+    <Grid Style="{StaticResource LayoutRootStyle}" Background="{StaticResource SuggesBackgroundColor}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <!-- Horizontal scrolling grid used in most view states -->
+        <GridView
+            x:Name="itemGridView"
+            AutomationProperties.AutomationId="ItemGridView"
+            AutomationProperties.Name="Grouped Items"
+            Grid.RowSpan="2"
+            Padding="116,137,40,46"
+            ItemsSource="{Binding Source={StaticResource groupedItemsViewSource}}"
+            ItemTemplate="{StaticResource SuggesGroupedItemGridView_ItemsGenerated}"
+            SelectionMode="None"
+            IsSwipeEnabled="True"
+            IsItemClickEnabled="True"
+            ItemClick="itemGridView_ItemClick"  SelectedIndex="-1" 
+			ItemContainerStyle="{StaticResource SuggesGroupedItemGridView_ItemsGenerated_Container}">
+            <GridView.Background>
+                <ImageBrush ImageSource="Assets/Background.png"/>
+            </GridView.Background>
+
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+            <GridView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <Grid Margin="1,0,0,6">
+                                <Button
+                                    AutomationProperties.Name="Group Title"
+                                    Style="{StaticResource TextPrimaryButtonStyle}" >
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Title}" Margin="3,-7,10,10" Style="{StaticResource GroupHeaderTextStyle}" Foreground="{StaticResource SuggesGroupTitleForegroundColor}" />
+                                        <TextBlock Text="{StaticResource ChevronGlyph}" FontFamily="Segoe UI Symbol" Margin="0,-7,0,10" Style="{StaticResource GroupHeaderTextStyle}" Foreground="{StaticResource SuggesFlyoutBackgroundColor}"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                    <GroupStyle.Panel>
+                        <ItemsPanelTemplate>
+                            <VariableSizedWrapGrid Orientation="Vertical" Margin="0,0,80,0"/>
+                        </ItemsPanelTemplate>
+                    </GroupStyle.Panel>
+                </GroupStyle>
+            </GridView.GroupStyle>
+        </GridView>
+
+        <!-- Vertical scrolling list only used when snapped -->
+        <ListView
+            x:Name="itemListView"
+            AutomationProperties.AutomationId="ItemListView"
+            AutomationProperties.Name="Grouped Items"
+            Grid.Row="1"
+            Visibility="Collapsed"
+            Margin="0,-10,0,0"
+            Padding="10,0,0,60"
+            ItemsSource="{Binding Source={StaticResource groupedItemsViewSource}}"
+            ItemTemplate="{StaticResource SuggesGroupedItemListView_ItemsGenerated}"
+            SelectionMode="None"
+            IsSwipeEnabled="True"
+            IsItemClickEnabled="True"
+            ItemClick="itemListView_ItemClick"
+			SelectedIndex="-1"
+			ItemContainerStyle="{StaticResource SuggesGroupedItemListView_ItemsGenerated_Container}">
+
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <Grid Margin="7,7,0,0">
+                                <Button
+                                    AutomationProperties.Name="Group Title"
+                                    Style="{StaticResource TextPrimaryButtonStyle}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Title}" Margin="3,-7,10,10" Style="{StaticResource GroupHeaderTextStyle}" Foreground="{StaticResource SuggesGroupTitleForegroundColor}" />
+                                        <TextBlock Text="{StaticResource ChevronGlyph}" FontFamily="Segoe UI Symbol" Margin="0,-7,0,10" Style="{StaticResource GroupHeaderTextStyle}"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+        </ListView>
+
+
+        <!-- Back button, page title and subtitles-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource SuggesBackButtonStyle}"/>
+            <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{StaticResource AppName}" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}" Foreground="{StaticResource SuggesFlyoutBackgroundColor}"  />
+            <TextBlock x:Name="resultText" Grid.Column="2" Text="Results for&#x00a0;" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}" Foreground="{StaticResource SuggesSecondaryDescriptionForegroundColor}"/>
+            <TextBlock x:Name="queryText" Grid.Column="3" Text="{Binding QueryText}" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
+        </Grid>
+
+        <TextBlock
+            x:Name="noResultsTextBlock"
+            Grid.Row="1"
+            Margin="120,50,0,0"
+            Visibility="Collapsed"
+            Style="{StaticResource SubheaderTextStyle}"
+            Text="No results match your search." Foreground="{StaticResource SuggesGroupTitleForegroundColor}" />
+
+        <VisualStateManager.VisualStateGroups>
+
+            <!-- Visual states reflect the application's view state -->
+            <VisualStateGroup x:Name="ApplicationViewStates">
+                <VisualState x:Name="FullScreenLandscape"/>
+                <VisualState x:Name="Filled"/>
+
+                <!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
+                <VisualState x:Name="FullScreenPortrait">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PortraitBackButtonStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="filtersItemsControl" Storyboard.TargetProperty="Margin">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="100,-3,90,30"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="resultsGridView" Storyboard.TargetProperty="Padding">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="90,240,86,56"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="noResultsTextBlock" Storyboard.TargetProperty="Margin">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="100,50,0,0"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <!--
+                    The back button and title have different styles when snapped in addition to more extensive changes:
+                    * The query text becomes the page header
+                    * A different representation for filter selection and search results is used
+                -->
+                <VisualState x:Name="Snapped">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="queryText" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageHeaderTextStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="resultText" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="typicalPanel" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="snappedPanel" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="noResultsTextBlock" Storyboard.TargetProperty="Margin">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="20,0,0,0"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="noResultsTextBlock" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource BaselineTextStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+
+            <VisualStateGroup x:Name = "ResultStates">
+                <VisualState x:Name="ResultsFound" />
+                <!-- When there are no results, the results panel is replaced with an informational TextBlock -->
+                <VisualState x:Name="NoResultsFound">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="resultsPanel" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="noResultsTextBlock" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                        </ObjectAnimationUsingKeyFrames>						
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</common:LayoutAwarePage>

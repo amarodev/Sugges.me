@@ -27,5 +27,6 @@ namespace Sugges.UI.Logic.Models
         Task<List<DataModel.TrashImage>> GetTrashImagesAsync();
         Task DeleteTrashImageAsync(string p);
         Task<TripViewModel> GetTripAsync(int identifier);
+        Task<List<TripViewModel>> GetGroupsByCriteria(string queryText);
     }
 }

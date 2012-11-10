@@ -195,7 +195,7 @@ namespace Sugges.UI
         private void btnAdd_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             this.bottomAppBar.IsOpen = false;
-            var trips = new SettingsFlyout();
+            var trips = new Flyout();
             trips.ShowFlyout(new ManageTrip());
         }
 

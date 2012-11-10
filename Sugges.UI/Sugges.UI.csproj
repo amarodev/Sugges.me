@@ -116,7 +116,7 @@
     <Compile Include="Common\BindableBase.cs" />
     <Compile Include="Common\BooleanNegationConverter.cs" />
     <Compile Include="Common\BooleanToVisibilityConverter.cs" />
-    <Compile Include="Common\SettingsFlyout.cs" />
+    <Compile Include="Common\Flyout.cs" />
     <Compile Include="Converters\BooleanNegationConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\ColorMoneyConverter.cs" />
@@ -152,6 +152,9 @@
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\RichTextColumns.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="SearchResultsPage.xaml.cs">
+      <DependentUpon>SearchResultsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SearchSuggestionsResultsPage.xaml.cs">
       <DependentUpon>SearchSuggestionsResultsPage.xaml</DependentUpon>
     </Compile>
@@ -238,6 +241,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ItemDetailPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SearchResultsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
